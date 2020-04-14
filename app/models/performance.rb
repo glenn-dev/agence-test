@@ -1,4 +1,4 @@
-class CaoUsuario < ApplicationRecord
+class Performance < ApplicationRecord
 
   def self.find_by_user
     @connection = ActiveRecord::Base.connection
@@ -6,7 +6,7 @@ class CaoUsuario < ApplicationRecord
       ON cao_usuario.co_usuario = permissao_sistema.co_usuario
       WHERE permissao_sistema.co_sistema = 1 AND 
       permissao_sistema.in_ativo = "S" AND 
-      permissao_sistema.co_tipo_usuario = 1 ;')
+      permissao_sistema.co_tipo_usuario IN (0, 1, 2) ;')
     return results
   end
 
