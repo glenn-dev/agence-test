@@ -1,7 +1,7 @@
 class PerformanceController < ApplicationController
 
   def index
-    results = Performance.find_by_user
+    results = Performance.get_bills
     render json: results.to_json
   end
 
