@@ -1,8 +1,6 @@
 class Performance < ApplicationRecord
 
   ## GET METHODS:
-  
-  connection = ActiveRecord::Base.connection
   # GET USERS METHOD:
   def self.get_users
     users = ActiveRecord::Base.connection.exec_query("
@@ -18,7 +16,7 @@ class Performance < ApplicationRecord
   end
 
   # GET BILLS DATA METHOD:
-  def self.get_bills #Params: Usuario, date1, date2
+  def self.get_bills #Params: users, date1, date2
     bills = ActiveRecord::Base.connection.exec_query("
       SELECT co_fatura, valor, total_imp_inc, data_emissao, comissao_cn
       FROM cao_fatura 
@@ -33,7 +31,7 @@ class Performance < ApplicationRecord
   end
 
   # GET FIXED COST METHOD:
-  def self.get_fixed_cost # Params: usuario
+  def self.get_fixed_cost # Params: users
     fixed_cost = ActiveRecord::Base.connection.exec_query("
       SELECT brut_salario 
       FROM cao_salario
@@ -43,26 +41,28 @@ class Performance < ApplicationRecord
   end
 
   ## RELATORIO:
-
-  # CALCULATE NET INCOME METHOD:
-  def self.set_net_income
+  # CALCULATE MONTHLY REPORT BY USERS (RELATORIO) METHOD:
+  def self.set_monthly_report
     bills = get_bills
-    acum = 0
+    net_income_accum = 0
+    commission_accum = 0
     current_month = ''
-    monthly_billing = []
+    monthly_report = []
     
     bills.each_with_index do |bill, index|
       if current_month == bill["data_emissao"].strftime("%Y-%m")
-        acum += bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))
+        net_income_accum += bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))
+        commission_accum += (bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))) * (bill["comissao_cn"] * 0.01)
         current_month = bill["data_emissao"].strftime("%Y-%m")
-        monthly_billing << { month: current_month, value: acum } if index === (bills.length - 1) 
+        monthly_report << { month: current_month, net_income: net_income_accum, commission: commission_accum } if index === (bills.length - 1) 
       else
-        monthly_billing << { month: current_month, value: acum } if index != 0 || index === (bills.length - 1)
+        monthly_report << { month: current_month, net_income: net_income_accum, commission: commission_accum } if index != 0 || index === (bills.length - 1)
         current_month = bill["data_emissao"].strftime("%Y-%m")
-        acum = bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))
+        net_income_accum = bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))
+        commission_accum = (bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))) * (bill["comissao_cn"] * 0.01)
       end
     end
-    return monthly_billing
+    return monthly_report
   end
 
 end
