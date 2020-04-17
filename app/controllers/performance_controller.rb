@@ -1,7 +1,8 @@
 class PerformanceController < ApplicationController
 
+  
   def index
-    results = Performance.set_monthly_report
+    results = Performance.get_fixed_cost
     render json: results.to_json
   end
 
