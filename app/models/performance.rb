@@ -1,10 +1,11 @@
 class Performance < ApplicationRecord
 
   ## GET METHODS:
-  # GET "CAO_USUARIO" METHOD:
+  
+  connection = ActiveRecord::Base.connection
+  # GET USERS METHOD:
   def self.get_users
-    connection = ActiveRecord::Base.connection
-    results = connection.exec_query("
+    users = ActiveRecord::Base.connection.exec_query("
       SELECT cao_usuario.co_usuario, no_usuario 
       FROM cao_usuario 
       INNER JOIN permissao_sistema
@@ -13,34 +14,55 @@ class Performance < ApplicationRecord
       AND permissao_sistema.in_ativo = 'S' 
       AND permissao_sistema.co_tipo_usuario IN (0, 1, 2) ;
       ")
-    return results
+    return users
   end
 
-  # GET "CAO_FATURA" METHOD:
-  def self.get_bills
-    connection = ActiveRecord::Base.connection
-    results = connection.exec_query("
-      SELECT co_fatura , valor, total_imp_inc, data_emissao 
+  # GET BILLS DATA METHOD:
+  def self.get_bills #Params: Usuario, date1, date2
+    bills = ActiveRecord::Base.connection.exec_query("
+      SELECT co_fatura, valor, total_imp_inc, data_emissao, comissao_cn
       FROM cao_fatura 
       INNER JOIN cao_os
       USING (co_os)
       WHERE cao_os.co_usuario = 'carlos.arruda' 
       AND data_emissao >='2007-01-01 00:00:00'
       AND data_emissao <'2007-03-01 00:00:00'
-      GROUP BY co_fatura ;
+      ORDER BY data_emissao ;
       ")
-    return results
+    return bills
+  end
+
+  # GET FIXED COST METHOD:
+  def self.get_fixed_cost # Params: usuario
+    fixed_cost = ActiveRecord::Base.connection.exec_query("
+      SELECT brut_salario 
+      FROM cao_salario
+      WHERE co_usuario = 'carlos.arruda' ;
+      ")
+    return fixed_cost
   end
 
   ## RELATORIO:
-  # CALCULATE "RECEITA LIQUIDA" METHOD:
+
+  # CALCULATE NET INCOME METHOD:
   def self.set_net_income
-    values = get_net_incomes
-    @incomes = 0
-    values.each do |value|
-      @incomes += value["valor"] - (value["valor"] * (value["total_imp_inc"] * 0.01))
+    bills = get_bills
+    acum = 0
+    current_month = ''
+    monthly_billing = []
+    
+    bills.each_with_index do |bill, index|
+      if current_month == bill["data_emissao"].strftime("%Y-%m")
+        acum += bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))
+        current_month = bill["data_emissao"].strftime("%Y-%m")
+        monthly_billing << { month: current_month, value: acum } if index === (bills.length - 1) 
+      else
+        monthly_billing << { month: current_month, value: acum } if index != 0 || index === (bills.length - 1)
+        current_month = bill["data_emissao"].strftime("%Y-%m")
+        acum = bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))
+      end
     end
-    return @incomes
+    return monthly_billing
   end
 
 end
