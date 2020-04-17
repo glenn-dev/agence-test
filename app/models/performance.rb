@@ -10,7 +10,8 @@ class Performance < ApplicationRecord
       ON cao_usuario.co_usuario = permissao_sistema.co_usuario
       WHERE permissao_sistema.co_sistema = 1 
       AND permissao_sistema.in_ativo = 'S' 
-      AND permissao_sistema.co_tipo_usuario IN (0, 1, 2) ;
+      AND permissao_sistema.co_tipo_usuario IN (0, 1, 2) 
+      ORDER BY no_usuario ;
       ")
     return users
   end
@@ -44,6 +45,7 @@ class Performance < ApplicationRecord
   # CALCULATE MONTHLY REPORT BY USERS (RELATORIO) METHOD:
   def self.set_monthly_report
     bills = get_bills
+    fixed_cost = get_fixed_cost[0]["brut_salario"]
     net_income_accum = 0
     commission_accum = 0
     current_month = ''
@@ -54,14 +56,20 @@ class Performance < ApplicationRecord
         net_income_accum += bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))
         commission_accum += (bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))) * (bill["comissao_cn"] * 0.01)
         current_month = bill["data_emissao"].strftime("%Y-%m")
-        monthly_report << { month: current_month, net_income: net_income_accum, commission: commission_accum } if index === (bills.length - 1) 
+        monthly_report << { month: current_month, net_income: net_income_accum.round(2), commission: commission_accum.round(2) } if index === (bills.length - 1) 
       else
-        monthly_report << { month: current_month, net_income: net_income_accum, commission: commission_accum } if index != 0 || index === (bills.length - 1)
+        monthly_report << { month: current_month, net_income: net_income_accum.round(2), commission: commission_accum.round(2) } if index != 0 || index === (bills.length - 1)
         current_month = bill["data_emissao"].strftime("%Y-%m")
         net_income_accum = bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))
         commission_accum = (bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))) * (bill["comissao_cn"] * 0.01)
       end
     end
+
+    monthly_report.each do |month|
+      month[:fixed_cost] = fixed_cost
+      month[:profit] = month[:net_income] - (month[:commission] + fixed_cost)
+    end
+    
     return monthly_report
   end
 
