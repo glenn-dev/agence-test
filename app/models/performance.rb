@@ -21,13 +21,24 @@ class Performance < ApplicationRecord
     # PSEUDO PARAMS:
     users = "'carlos.arruda', 'renato.pereira', 'anapaula.chiodaro', 'felipe.chahad', 'bruno.freitas'"
     init_date = '2007-01-01 00:00:00'
-    end_date = '2007-04-01 00:00:00'
+    end_date = '2007-07-01 00:00:00'
 
     bills = ActiveRecord::Base.connection.exec_query("
-      SELECT co_fatura, valor, total_imp_inc, data_emissao, comissao_cn, cao_os.co_usuario
+      SELECT 
+	      co_fatura, 
+	      valor, 
+	      total_imp_inc, 
+	      data_emissao, 
+	      comissao_cn, 
+	      cao_usuario.no_usuario,
+	      cao_salario.brut_salario 
       FROM cao_fatura 
       INNER JOIN cao_os
-      USING (co_os)
+      INNER JOIN cao_usuario 
+      INNER JOIN cao_salario
+      ON cao_os.co_usuario = cao_usuario.co_usuario 
+      AND cao_fatura.co_os = cao_os.co_os
+      AND cao_salario.co_usuario = cao_usuario.co_usuario
       WHERE cao_os.co_usuario IN (#{users})
       AND data_emissao >= '#{init_date}'
       AND data_emissao < '#{end_date}'
@@ -50,51 +61,38 @@ class Performance < ApplicationRecord
 
   ## RELATORIO:
   # GROUP BILLS BY USER METHOD:
-  def self.user_monthly_report
-    users_report = {}
-    user_monthly_report = []
+  def self.users_billing
     bills = get_bills
-    current_user = ''
-    
-    users_report = bills.group_by{ |bill| bill["co_usuario"] }
-    
+    users_report = {}
+    users_report = bills.group_by { |bill| bill["no_usuario"] }.map { |user, bills| {user: user, report: bills }}
     return users_report
   end
-  
-  # CALCULATE MONTHLY REPORT BY USERS (RELATORIO) METHOD:
-  def self.set_monthly_report
-    bills = user_monthly_report
-    fixed_cost = get_fixed_cost[0]["brut_salario"]
-    net_income_accum = 0
-    commission_accum = 0
-    current_month = ''
-    monthly_report = []
 
-    bills.each_with_index do |bill, index|
+  # SET MONTHLY REPORT BY USER METHOD
+  def self.monthly_report_by_user
+    reports_by_users = users_billing
+    monthly_report_by_user = []
+    fixed_cost = 
 
-      if current_month == bill["data_emissao"].strftime("%Y-%m")
-        current_month = bill["data_emissao"].strftime("%Y-%m")
-        net_income_accum += bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))
-        commission_accum += (bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))) * (bill["comissao_cn"] * 0.01)
-        if index === (bills.length - 1) 
-          monthly_report << { month: current_month, net_income: net_income_accum.round(2), commission: commission_accum.round(2) }
-        end 
-      else
-        if index != 0 || index === (bills.length - 1)
-          monthly_report << { month: current_month, net_income: net_income_accum.round(2), commission: commission_accum.round(2) }
-        end
-        current_month = bill["data_emissao"].strftime("%Y-%m")
-        net_income_accum = bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))
-        commission_accum = (bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))) * (bill["comissao_cn"] * 0.01)
-      end
-    end
+    reports_by_users.map { |billing|
 
-    monthly_report.each do |month|
-      month[:fixed_cost] = fixed_cost
-      month[:profit] = month[:net_income] - (month[:commission] + fixed_cost)
-    end
-
-    return monthly_report
+      monthly_report = billing[:report].group_by {
+        |dis_bills| dis_bills["data_emissao"].strftime("%Y-%m")
+      }.map { |date, ord_bills|
+        income = 0
+        commission = 0
+        profit = 0
+        fixed_cost = 0
+        ord_bills.map { |bill|
+          fixed_cost = bill["brut_salario"]
+          income += bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))
+          commission += (bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))) * (bill["comissao_cn"] * 0.01)
+        } 
+        profit = income - (fixed_cost + commission)
+        final_calculation = { month: date, net_income: income.round(2), fixed_cost: fixed_cost.round(2), commission: commission.round(2), profit: profit.round(2) }
+        }
+        monthly_report_by_user << { user: billing[:user], report: monthly_report }
+      }
+      return monthly_report_by_user
   end
-
 end
