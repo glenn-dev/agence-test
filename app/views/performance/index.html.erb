@@ -12,19 +12,24 @@
       </div>
       <div class="mb-3">
         <h4>Período:</h4>
-          <label for="start">Fecha inicio:</label>
-          <input class="w-100 mb-3" type="text" id="start_date" data-provide='datepicker' data-date-format="dd/mm/yyyy" >
-          <label for="start">Fecha final:</label>
-          <input class="w-100" type="text" id="end_date" data-provide='datepicker' data-date-format="dd/mm/yyyy" >
+          <label for="start" class="w-100">Fecha inicio:</label>
+          <input class="mb-3" type="text" id="start_date" data-provide='datepicker' data-date-format="dd/mm/yyyy" >
+          <label for="start" class="w-100">Fecha final:</label>
+          <input type="text" id="end_date" data-provide='datepicker' data-date-format="dd/mm/yyyy" >
       </div>
       <div class="text-center">
-        <%#= link_to "Relatorio", relatorio_path, class:'btn btn-outline-primary w-25 mx-2', remote: true %>
         <button id="relatorio" type="button" class="btn btn-outline-primary w-25 mx-2">Relatorio</button>
-        <button type="button" class="btn btn-outline-primary w-25 mx-2">Gráfico</button>
-        <button type="button" class="btn btn-outline-primary w-25 mx-2">Pizza</button>
+        <button id="grafico" type="button" class="btn btn-outline-primary w-25 mx-2">Gráfico</button>
+        <button id="pizza" type="button" class="btn btn-outline-primary w-25 mx-2">Pizza</button>
       </div>
     </div>
-    <div id="reports" class="col-md-8 border">
+    <div class="col-md-8 border">
+      <div class="align-middle text-center bg-info my-3 py-2">
+        <%= image_tag("agence.png" ) %>
+      </div>
+      <div id="reports">
+      
+      </div>
     </div>
   </div>
 </div>

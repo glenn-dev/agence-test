@@ -75,7 +75,7 @@ class Performance < ApplicationRecord
     reports_by_users.map { |billing|
 
       monthly_report = billing[:report].group_by {
-        |dis_bills| dis_bills["data_emissao"].strftime("%Y-%m")
+        |dis_bills| dis_bills["data_emissao"].strftime("%m-%Y")
       }.map { |date, ord_bills|
         income = 0
         commission = 0

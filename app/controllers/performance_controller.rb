@@ -14,9 +14,17 @@ class PerformanceController < ApplicationController
   end
 
   def grafico
+    @reports = Performance.monthly_report_by_user(params[:users], params[:date1], params[:date2])
+    respond_to do |format|
+      format.json { render json: @reports }
+    end
   end
 
   def pizza
+    @reports = Performance.monthly_report_by_user(params[:users], params[:date1], params[:date2])
+    respond_to do |format|
+      format.js
+    end
   end
 
   private
