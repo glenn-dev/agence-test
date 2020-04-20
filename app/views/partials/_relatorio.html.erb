@@ -1,0 +1,38 @@
+<% @reports.each do |report| %>
+  <table class="table">
+    <thead class="thead-light">
+      <tr>
+        <th>Nombre: <%= report[:user] %></th>
+        <th colspan="5"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <td class="align-middle text-center">
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Período</th>
+              <th>Receita Líquida</th>
+              <th>Custo Fixo</th>
+              <th>Comissão</th>
+              <th>Lucro</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% report[:report].each do |value| %>
+              <tr>
+                <td class="align-middle"><%= "#{value[:month]}" %></td>
+                <td class="align-middle"><%= "#{value[:net_income]}" %></td>
+                <td class="align-middle"><%= "#{value[:fixed_cost]}" %></td>
+                <td class="align-middle"><%= "#{value[:commission]}" %></td>
+                <td class="align-middle"><%= "#{value[:profit]}" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </td>
+    </tbody>
+  </table>
+<% end %>
