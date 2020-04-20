@@ -4,26 +4,27 @@
       <h4 class="my-2">Seleccione consultor:</h4>
       <div>
         <% @users.each_with_index do |user, i| %>
-          <div class="form-group form-check">
-            <input type="checkbox" class="form-check-input" id="check<%= i %>">
+          <div id="users_checkbox" class="form-group form-check">
+            <input name="'<%= user["co_usuario"] %>'" type="checkbox" class="form-check-input" id="check<%= i %>">
             <label class="form-check-label" for="check<%= i %>"><%= user["no_usuario"]%></label>
           </div>
         <% end %>
       </div>
       <div class="mb-3">
-        <h4>Seleccione fecha:</h4>
+        <h4>Período:</h4>
           <label for="start">Fecha inicio:</label>
-          <input class="w-100 mb-3" type="text" id="start" data-provide='datepicker' data-date-format="dd/mm/yyyy" >
+          <input class="w-100 mb-3" type="text" id="start_date" data-provide='datepicker' data-date-format="dd/mm/yyyy" >
           <label for="start">Fecha final:</label>
-          <input class="w-100" type="text" id="end" data-provide='datepicker' data-date-format="dd/mm/yyyy" >
+          <input class="w-100" type="text" id="end_date" data-provide='datepicker' data-date-format="dd/mm/yyyy" >
       </div>
       <div class="text-center">
-        <%= link_to "Relatorio", relatorio_path, class:'btn btn-outline-primary w-25 mx-2', remote: true %>
+        <%#= link_to "Relatorio", relatorio_path, class:'btn btn-outline-primary w-25 mx-2', remote: true %>
+        <button id="relatorio" type="button" class="btn btn-outline-primary w-25 mx-2">Relatorio</button>
         <button type="button" class="btn btn-outline-primary w-25 mx-2">Gráfico</button>
         <button type="button" class="btn btn-outline-primary w-25 mx-2">Pizza</button>
       </div>
     </div>
-    <div id="reports" class="col-md-1-8 border">
+    <div id="reports" class="col-md-8 border">
     </div>
   </div>
 </div>

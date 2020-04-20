@@ -1,5 +1,5 @@
 class PerformanceController < ApplicationController
-  before_action :set_reports, only: [:relatorio, :grafico, :pizza]
+  # before_action :reports_params, only: [:relatorio, :grafico, :pizza]
   
   def index
     @users = Performance.get_users
@@ -7,6 +7,10 @@ class PerformanceController < ApplicationController
   end
 
   def relatorio
+    @reports = Performance.monthly_report_by_user(params[:users], params[:date1], params[:date2])
+    respond_to do |format|
+      format.js
+    end
   end
 
   def grafico
@@ -17,14 +21,8 @@ class PerformanceController < ApplicationController
 
   private
 
-  def set_reports
-    @reports = Performance.monthly_report_by_user
-    # (params[:users, :date1, :date2])
+  def reports_params
+    params.require(:performance).permit(:users, :date1, :date2)
   end
-  # @communication = Communication.find(params[:id])
-
-  # def reports_params
-  #   params.require(:communication).permit(:users, :date1, :date2)
-  # end
 
 end

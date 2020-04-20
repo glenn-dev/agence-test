@@ -19,10 +19,6 @@ class Performance < ApplicationRecord
   # GET BILLS DATA METHOD:
   def self.get_bills
     # PSEUDO PARAMS:
-    users = "'carlos.arruda', 'renato.pereira', 'anapaula.chiodaro', 'felipe.chahad', 'bruno.freitas'"
-    init_date = '2007-01-01 00:00:00'
-    end_date = '2007-07-01 00:00:00'
-
     bills = ActiveRecord::Base.connection.exec_query("
       SELECT 
 	      co_fatura, 
@@ -39,9 +35,9 @@ class Performance < ApplicationRecord
       ON cao_os.co_usuario = cao_usuario.co_usuario 
       AND cao_fatura.co_os = cao_os.co_os
       AND cao_salario.co_usuario = cao_usuario.co_usuario
-      WHERE cao_os.co_usuario IN (#{users})
-      AND data_emissao >= '#{init_date}'
-      AND data_emissao < '#{end_date}'
+      WHERE cao_os.co_usuario IN (#{@users})
+      AND data_emissao >= '#{@date1}'
+      AND data_emissao < '#{@date2}'
       ORDER BY data_emissao ;
       ")
     return bills
@@ -50,11 +46,11 @@ class Performance < ApplicationRecord
   # GET FIXED COST METHOD:
   def self.get_fixed_cost
     # PSEUDO PARAMS:
-    users = "'carlos.arruda', 'renato.pereira', 'anapaula.chiodaro', 'felipe.chahad', 'bruno.freitas'"
+    #users = "'carlos.arruda', 'renato.pereira', 'anapaula.chiodaro', 'felipe.chahad', 'bruno.freitas'"
     fixed_cost = ActiveRecord::Base.connection.exec_query("
       SELECT brut_salario 
       FROM cao_salario
-      WHERE co_usuario IN(#{users}) ;
+      WHERE co_usuario IN(#{@users}) ;
       ")
     return fixed_cost
   end
@@ -69,10 +65,12 @@ class Performance < ApplicationRecord
   end
 
   # SET MONTHLY REPORT BY USER METHOD
-  def self.monthly_report_by_user
+  def self.monthly_report_by_user(users, start_date, end_date)
+    @users = users
+    @date1 = Time.parse("#{start_date} 23:59:59").strftime("%Y-%m-%d %T")
+    @date2 = Time.parse("#{end_date} 23:59:59").strftime("%Y-%m-%d %T")
     reports_by_users = users_billing
     monthly_report_by_user = []
-    fixed_cost = 
 
     reports_by_users.map { |billing|
 
