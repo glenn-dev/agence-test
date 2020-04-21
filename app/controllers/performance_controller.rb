@@ -26,10 +26,4 @@ class PerformanceController < ApplicationController
     end
   end
 
-  private
-
-  # def reports_params
-  #   params.require(:performance).permit(:users, :date1, :date2)
-  # end
-
 end
