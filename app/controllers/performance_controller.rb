@@ -3,7 +3,6 @@ class PerformanceController < ApplicationController
   
   def index
     @users = Performance.get_users
-    #render json: @reports.to_json
   end
 
   def relatorio
@@ -29,8 +28,8 @@ class PerformanceController < ApplicationController
 
   private
 
-  def reports_params
-    params.require(:performance).permit(:users, :date1, :date2)
-  end
+  # def reports_params
+  #   params.require(:performance).permit(:users, :date1, :date2)
+  # end
 
 end
