@@ -1,24 +1,18 @@
-# README
+# AGENCE-TEST
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+* Aplicacion de prueba: Sistema permite evaluar el desempeño de uno o varios consultores en un periodo de tiempo determinado por el usuario.
 
-Things you may want to cover:
+* Ruby version 2.6.0
 
-* Ruby version
+* Rails version: 5.2.4
 
-* System dependencies
+* Database mysql 0.4.4
 
-* Configuration
+* Yarn 1.22
 
-* Database creation
+* Bootstrap 4 CDN
 
-* Database initialization
+* Chart.js
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* Deployment: Heroku
+* (https://comunidapp-project.herokuapp.com/)
