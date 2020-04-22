@@ -55,7 +55,7 @@ $(document).ready(function(){
       var report = obj[i].report
       var profitArr = []
 
-      for (let j = 0; j < report.length; j++) { 
+      for (let j = 0; j < (report.length - 1); j++) { 
         let profit = report[j].profit
         let month = report[j].month
         profitArr.push(profit);
@@ -116,8 +116,7 @@ $(document).ready(function(){
     for (let i = 0; i < obj.length; i++) { 
       var report = obj[i].report
       var profitArr = []
-      
-      for (let j = 0; j < report.length; j++) { 
+      for (let j = 0; j < (report.length - 1); j++) { 
         let profit = report[j].profit
         profitArr.push(profit);
       }
