@@ -88,6 +88,18 @@ class Performance < ApplicationRecord
         profit = income - (fixed_cost + commission)
         final_calculation = { month: date, net_income: income.round(2), fixed_cost: fixed_cost.round(2), commission: commission.round(2), profit: profit.round(2) }
         }
+        inc = 0
+        cost = 0
+        com = 0
+        prof = 0
+        monthly_report.each { |month| 
+          inc += month[:net_income]
+          cost += month[:fixed_cost]
+          com += month[:commission]
+          prof += month[:profit]
+        }
+        monthly_report << { month: 'SALDO:', net_income: inc.round(2), fixed_cost: cost.round(2), commission: com.round(2), profit: prof.round(2) }
+
         monthly_report_by_user << { user: billing[:user], report: monthly_report }
       }
       return monthly_report_by_user
