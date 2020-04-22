@@ -1,5 +1,8 @@
 $(document).ready(function(){
 
+  var bgColor = ['rgba(255, 99, 132, 0.2)','rgba(54, 162, 235, 0.2)','rgba(255, 206, 86, 0.2)','rgba(75, 192, 192, 0.2)','rgba(153, 102, 255, 0.2)','rgba(255, 159, 64, 0.2)','#ffff8d','#40c4ff','#69f0ae'];
+  var brColor = ['rgba(255, 99, 132, 1)','rgba(54, 162, 235, 1)','rgba(255, 206, 86, 1)','rgba(75, 192, 192, 1)','rgba(153, 102, 255, 1)','rgba(255, 159, 64, 1)','#dfdf47','#0b98da','#1de786'];
+
   // FETCH DATA FROM DOM:
   function fetchData(){
     let selected = [];
@@ -29,59 +32,65 @@ $(document).ready(function(){
     $.get("relatorio", domData);
   });
 
+  // RANDOM COLOR FUNCTION:
+  function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
   // GRAFICO
   $('#grafico').click( async function() {
     let data = await getData()
     var obj = data;
-    var bgColor = ['rgba(255, 99, 132, 0.2)','rgba(54, 162, 235, 0.2)','rgba(255, 206, 86, 0.2)','rgba(75, 192, 192, 0.2)','rgba(153, 102, 255, 0.2)','rgba(255, 159, 64, 0.2)'];
-    var brColor = ['rgba(255, 99, 132, 1)','rgba(54, 162, 235, 1)','rgba(255, 206, 86, 1)','rgba(75, 192, 192, 1)','rgba(153, 102, 255, 1)','rgba(255, 159, 64, 1)'];
     var dataset = []
+    var monthsArr = []
+    var fixed_cost = 0
     
     for (let i = 0; i < obj.length; i++) { 
       var user = obj[i].user
       var report = obj[i].report
       var profitArr = []
-      var monthsArr = []
-      var bgColArr = []
-      var brColArr = []
-      
+
       for (let j = 0; j < report.length; j++) { 
         let profit = report[j].profit
         let month = report[j].month
-        let bg = bgColor[j]
-        let br = brColor[j]
         profitArr.push(profit);
-        monthsArr.push(month);
-        bgColArr.push(bg);
-        brColArr.push(br); 
+        if( !monthsArr.includes(month) ) {
+          monthsArr.push(month);
+        }
       }
-      if(i < obj.length){
-        dataset.push(
-          { label: `${user} Profit`,
-          data: profitArr, 
-          backgroundColor: bgColArr, 
-          borderColor: brColArr, 
-          borderWidth: 1 
-        },)
-      } else {
-        dataset.push(
-          { label: `${user} Profit`,
-          data: profitArr, 
-          backgroundColor: bgColArr, 
-          borderColor: brColArr, 
-          borderWidth: 1 
-        })
-      }
-      
+
+      fixed_cost += obj[i].report[0].fixed_cost;
+      dataset.push(
+        { label: `${user} Profit`,
+        data: profitArr, 
+        backgroundColor: bgColor[i],
+        borderColor: brColor[i],
+        borderWidth: 1 
+      })            
     }
-    
+
+    fixed_cost = fixed_cost / obj.length
+
+    dataset.push({
+           label: 'Line Dataset',
+           data: Array(monthsArr.length).fill(fixed_cost),
+           backgroundColor: 'rgba(54, 162, 235, 0.2)',
+           borderColor: 'rgba(54, 162, 235, 1',
+           type: 'line'
+       })
+          
     $('#reports').html("<canvas id='myChart' width='400' height='400'></canvas>")
     var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
+    var mixedChart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: monthsArr,
-        datasets: dataset
+          datasets: dataset,
+          labels: monthsArr
       },
       options: {
         scales: {
@@ -99,8 +108,6 @@ $(document).ready(function(){
   $('#pizza').click( async function() {
     let data = await getData()
     var obj = data;
-    var bgColor = ['rgba(255, 99, 132, 0.2)','rgba(54, 162, 235, 0.2)','rgba(255, 206, 86, 0.2)','rgba(75, 192, 192, 0.2)','rgba(153, 102, 255, 0.2)','rgba(255, 159, 64, 0.2)'];
-    var brColor = ['rgba(255, 99, 132, 1)','rgba(54, 162, 235, 1)','rgba(255, 206, 86, 1)','rgba(75, 192, 192, 1)','rgba(153, 102, 255, 1)','rgba(255, 159, 64, 1)'];
     var users = []
     var profits = []
     var bgColArr = []
