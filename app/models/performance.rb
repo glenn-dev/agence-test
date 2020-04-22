@@ -1,6 +1,6 @@
 class Performance < ApplicationRecord
 
-  ## GET QUERYs:
+  ## GET QUERYS:
   # GET USERS QUERY:
   def self.get_users
     users = ActiveRecord::Base.connection.exec_query("
@@ -84,7 +84,7 @@ class Performance < ApplicationRecord
           income += bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))
           commission += (bill["valor"] - (bill["valor"] * (bill["total_imp_inc"] * 0.01))) * (bill["comissao_cn"] * 0.01)
         }
-        
+
         profit = income - (fixed_cost + commission)
         final_calculation = { month: date, net_income: income.round(2), fixed_cost: fixed_cost.round(2), commission: commission.round(2), profit: profit.round(2) }
         }
