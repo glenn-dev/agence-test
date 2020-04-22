@@ -144,6 +144,6 @@ $(document).ready(function(){
       options: {
         cutoutPercentage: 5
       }
-    });
+    })
   });
 })

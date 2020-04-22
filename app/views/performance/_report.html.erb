@@ -24,10 +24,10 @@
             <% report[:report].each do |value| %>
               <tr>
                 <td class="align-middle"><%= "#{value[:month]}" %></td>
-                <td class="align-middle"><%= "#{value[:net_income]}" %></td>
-                <td class="align-middle"><%= "#{value[:fixed_cost]}" %></td>
-                <td class="align-middle"><%= "#{value[:commission]}" %></td>
-                <td class="align-middle"><%= "#{value[:profit]}" %></td>
+                <td class="align-middle"><%= "R$ #{value[:net_income]}" %></td>
+                <td class="align-middle"><%= "R$ #{value[:fixed_cost]}" %></td>
+                <td class="align-middle"><%= "R$ #{value[:commission]}" %></td>
+                <td class="align-middle"><%= "R$ #{value[:profit]}" %></td>
               </tr>
             <% end %>
           </tbody>
