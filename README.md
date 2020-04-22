@@ -15,4 +15,4 @@
 * Chart.js
 
 * Deployment: Heroku
-* (https://comunidapp-project.herokuapp.com/)
+* (https://agence-test-ror.herokuapp.com/)
